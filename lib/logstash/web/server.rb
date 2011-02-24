@@ -14,14 +14,15 @@ require "logstash/search/query"
 require "logstash/namespace"
 require "rack"
 require "rubygems"
-require "sinatra/async"
+#require "sinatra/async"
+require "sinatra/base"
 require "logstash/web/helpers/require_param"
 
 class EventMachine::ConnectionError < RuntimeError; end
 module LogStash::Web; end
 
 class LogStash::Web::Server < Sinatra::Base
-  register Sinatra::Async
+  #register Sinatra::Async
   helpers Sinatra::RequireParam # logstash/web/helpers/require_param
 
   set :haml, :format => :html5
@@ -32,7 +33,7 @@ class LogStash::Web::Server < Sinatra::Base
   use Rack::CommonLogger
   #use Rack::ShowExceptions
 
-  def initialize(settings={})
+  def initialize(settings=$settings)
     super
     # TODO(sissel): Support alternate backends
     backend_url = URI.parse(settings.backend_url)
@@ -52,16 +53,16 @@ class LogStash::Web::Server < Sinatra::Base
     end # backend_url.scheme
   end # def initialize
  
-  aget '/style.css' do
+  get '/style.css' do
     headers "Content-Type" => "text/css; charset=utf8"
     body sass :style
   end # /style.css
 
-  aget '/' do
+  get '/' do
     redirect "/search"
   end # '/'
 
-  aget '/search' do
+  get '/search' do
     result_callback = proc do |results|
       status 500 if @error
       @results = results
@@ -117,15 +118,15 @@ class LogStash::Web::Server < Sinatra::Base
       )
       result_callback.call results
     end
-  end # aget '/search'
+  end # get '/search'
 
-  apost '/api/search' do
+  post '/api/search' do
     api_search
-  end # apost /api/search
+  end # post /api/search
 
-  aget '/api/search' do
+  get '/api/search' do
     api_search
-  end # aget /api/search
+  end # get /api/search
 
   def api_search
 
@@ -222,7 +223,7 @@ class LogStash::Web::Server < Sinatra::Base
     end # @backend.search
   end # def api_search
 
-  aget '/api/histogram' do
+  get '/api/histogram' do
     headers({"Content-Type" => "text/plain" })
     missing = require_param(:q)
     if !missing.empty?
@@ -255,12 +256,12 @@ class LogStash::Web::Server < Sinatra::Base
       status 200
       body a
     end # @backend.search
-  end # aget '/api/histogram'
+  end # get '/api/histogram'
 
-  aget '/*' do
+  get '/*' do
     status 404 if @error
     body "Invalid path."
-  end # aget /*
+  end # get /*
 end # class LogStash::Web::Server
 
 require "optparse"
@@ -319,8 +320,11 @@ elsif settings.daemonize
   STDERR.reopen(devnull)
 end
 
-Rack::Handler::Thin.run(
-  Rack::CommonLogger.new( \
-    Rack::ShowExceptions.new( \
-      LogStash::Web::Server.new(settings))),
-  :Port => settings.port, :Host => settings.address)
+#Rack::Handler::Thin.run(
+  #Rack::CommonLogger.new( \
+    #Rack::ShowExceptions.new( \
+      #LogStash::Web::Server.new(settings))),
+  #:Port => settings.port, :Host => settings.address)
+
+$settings = settings
+LogStash::Web::Server.run! :port => settings.port, :host => settings.address
