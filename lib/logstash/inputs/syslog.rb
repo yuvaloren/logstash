@@ -23,8 +23,8 @@ class LogStash::Inputs::Syslog < LogStash::Inputs::Base
 
     # This comes from RFC3164, mostly.
     @@syslog_re ||= \
-      /<([0-9]{1,3})>([A-z]{3} [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) (\S+) (.*)/
-      #<priority       timestamp          Mmm dd hh:mm:ss             host  msg
+      /(?:<([0-9]{1,3})>)?([A-z]{3}  ?[0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2}) (?:(\S+[^:]) )?(.*)/
+      #<priority>      timestamp          Mmm dd hh:mm:ss             host  msg
   end # def register
 
   public
