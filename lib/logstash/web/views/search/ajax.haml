@@ -49,7 +49,10 @@
         %th event
       - @results.events.reverse.each do |event|
         %tr.event
-          %td.timestamp&= event.timestamp
+          - newtime = DateTime.parse(event.timestamp)
+          - newtime -= 7 / 24.0 # 'DateTime' is day based, so subtract 7/24ths of a day.
+          %td.timestamp&= newtime.to_s.gsub("+00:00", "-07:00")
+
           %td.message{ :"data-full" => event.to_json }
             %a{:href => "#"}
               %pre&= event.message
