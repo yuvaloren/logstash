@@ -1,3 +1,8 @@
+# Requirements to build:
+#   ant
+#   cpio
+#   wget
+#
 JRUBY_VERSION=1.6.4
 JRUBY_CMD=build/jruby/jruby-$(JRUBY_VERSION)/bin/jruby
 WITH_JRUBY=$(JRUBY_CMD) --1.9 -S
