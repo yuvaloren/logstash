@@ -66,14 +66,14 @@ class LogStash::Inputs::Base < LogStash::Plugin
 
   protected
   def to_event(raw, source)
-    @format ||= ["plain"]
+    @format ||= "plain"
 
     event = LogStash::Event.new
     event.type = @type
     event.tags = @tags.clone rescue []
     event.source = source
 
-    case @format.first
+    case @format
     when "plain"
       event.message = raw
     when "json"
@@ -106,7 +106,7 @@ class LogStash::Inputs::Base < LogStash::Plugin
         return nil
       end
     else
-      raise "unknown event format #{@format.first}, this should never happen"
+      raise "unknown event format #{@format}, this should never happen"
     end
 
     logger.debug(["Received new event", {:source => source, :event => event}])
