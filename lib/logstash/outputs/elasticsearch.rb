@@ -167,11 +167,11 @@ class LogStash::Outputs::ElasticSearch < LogStash::Outputs::Base
     @logger.debug(["Adding event to bulk index request", event.to_hash])
     index = event.sprintf(@index)
     type = event.sprintf(@type)
+
     # TODO(sissel): allow specifying the ID?
     # The document ID is how elasticsearch determines sharding hash, so it can
     # help performance if we allow folks to specify a specific ID.
-
-    bulk_request.index(index, type, event.to_hash)
+    bulk_request.index(index, type, nil, event.to_hash)
     return 1
   end
 
