@@ -448,7 +448,7 @@ class LogStash::Agent
     shutdown_plugins(@plugins)
     # When we get here, all inputs have finished, all messages are done
     @logger.info("Shutdown complete")
-    exit(0)
+    java.lang.System.exit(0)
   end # def shutdown
 
   def shutdown_plugins(plugins)
